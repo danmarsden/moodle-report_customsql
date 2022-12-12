@@ -239,6 +239,27 @@ class behat_report_customsql extends behat_base {
     }
 
     /**
+     * Simulates downloading an empty report to ensure it shows table headers.
+     *
+     * For example:
+     * When downloading the empty custom sql report "Frog" it contains the headers "frogname,freddy"
+     *
+     * @Then /^downloading custom sql report "(?P<REPORT_NAME>[^"]*)" returns a files with headers "(?P<field_value_string>(?:[^"]|\\")*)"$/
+     * @param string $reportname the name of the report to go to.
+     * @param string $headers the headers that shuold be returned.
+     */
+    public function downloading_custom_sql_report_x_returns_a_file_with_headers(string $reportname, string $headers) {
+        $report = $this->get_report_by_name($reportname);
+        $url = new \moodle_url('/pluginfile.php/1/'.'report_customsql'. '/'.'download'. '/'. $report->id);
+
+        $session = $this->getSession()->getCookie('MoodleSession');
+        $filecontent = download_file_content($url, array('Cookie' => 'MoodleSession=' . $session));
+        if ($filecontent != $headers) {
+            throw new \Behat\Mink\Exception\ExpectationException('File headers were missing or incorrect', $this->getSession());
+        }
+    }
+
+    /**
      * Find a report by name and get all the details.
      *
      * @param string $reportname the report name to find.
