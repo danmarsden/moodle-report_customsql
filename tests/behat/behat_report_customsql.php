@@ -251,10 +251,10 @@ class behat_report_customsql extends behat_base {
     public function downloading_custom_sql_report_x_returns_a_file_with_headers(string $reportname, string $headers) {
         $report = $this->get_report_by_name($reportname);
         $url = new \moodle_url('/pluginfile.php/1/'.'report_customsql'. '/'.'download'. '/'. $report->id, ['dataformat' => 'csv']);
-        $headers = trim($headers);
 
         $session = $this->getSession()->getCookie('MoodleSession');
         $filecontent = trim(download_file_content($url, array('Cookie' => 'MoodleSession=' . $session)));
+        $filecontent = core_text::trim_utf8_bom($filecontent);
         if ($filecontent != $headers) {
             throw new \Behat\Mink\Exception\ExpectationException("File headers: $filecontent did not match expected: $headers", $this->getSession());
         }
