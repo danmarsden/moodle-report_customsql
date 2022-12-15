@@ -254,7 +254,7 @@ class behat_report_customsql extends behat_base {
 
         $session = $this->getSession()->getCookie('MoodleSession');
         $filecontent = download_file_content($url, array('Cookie' => 'MoodleSession=' . $session));
-        if ($filecontent != $headers) {
+        if (trim($filecontent) != $headers) {
             throw new \Behat\Mink\Exception\ExpectationException("File headers: $filecontent did not match expected: $headers", $this->getSession());
         }
     }
